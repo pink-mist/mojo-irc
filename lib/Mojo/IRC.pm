@@ -1,6 +1,7 @@
 package Mojo::IRC;
 use Mojo::Base 'Mojo::EventEmitter';
 use Mojo::IOLoop;
+use Mojo::IRC::DCC;
 use File::Basename 'dirname';
 use File::Spec::Functions 'catfile';
 use IRC::Utils   ();
@@ -17,10 +18,11 @@ my %CTCP_QUOTE = ("\012" => 'n', "\015" => 'r', "\0" => '0', "\cP" => "\cP");
 
 my @DEFAULT_EVENTS = qw(
   irc_ping irc_nick irc_notice irc_rpl_welcome err_nicknameinuse
-  ctcp_ping ctcp_time ctcp_version
+  ctcp_ping ctcp_time ctcp_version dcc_request
 );
 
 has connect_timeout => sub { $ENV{MOJO_IRC_CONNECT_TIMEOUT} || 30 };
+has dcc             => sub { Mojo::IRC::DCC->new(connection => shift); };
 has ioloop          => sub { Mojo::IOLoop->singleton };
 has local_address   => '';
 has name            => 'Mojo IRC';
@@ -213,6 +215,12 @@ sub ctcp_version {
   $self->write(NOTICE => $nick, $self->ctcp(VERSION => 'Mojo-IRC', $VERSION));
 }
 
+sub dcc_request {
+  my ($self, $message) = @_;
+
+  $self->dcc->req($message);
+}
+
 sub irc_nick {
   my ($self, $message) = @_;
   my $old_nick = ($message->{prefix} =~ /^[~&@%+]?(.*?)!/)[0] || '';
@@ -294,7 +302,7 @@ CHUNK:
     }
     if ($event !~ /^\d+$/) {
       $event = lc $event;
-      $event = "irc_$event" unless $event =~ /^(ctcp|err)_/;
+      $event = "irc_$event" unless $event =~ /^(ctcp|err|dcc)_/;
       warn "[$self->{debug_key}] === $event\n" if DEBUG == 2;
       $self->emit($event => $msg);
     }
