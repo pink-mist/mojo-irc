@@ -207,9 +207,9 @@ sub _resume {
   $params{tid} = Mojo::IOLoop->timer($self->timeout,
     sub { $self->$err_cb("Resume timed out for '$local'."); });
 
-  $self->write(
+  $self->connection->write(
     PRIVMSG => $nick,
-    $self->ctcp(DCC => RESUME => _q($file), $port, $pos),
+    $self->connection->ctcp(DCC => RESUME => _q($file), $port, $pos),
     $err_cb
   );
 }
