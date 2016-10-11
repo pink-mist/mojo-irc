@@ -51,8 +51,11 @@ sub req_accept {
   my ($self, %params) = @_;
   $params{pos} = delete $params{size}; # just a naming thing
 
-  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== ACCEPT (" . join(", ", @params{qw/ nick file port pos /} ) . ")" if DEBUG == 2;
-  $self->emit(accept => $params{nick}, $params{file}, $params{port}, $params{pos});
+  warn sprintf "[%s] %s\n",
+    $self->connection->{debug_key},
+    "=== ACCEPT => " . join(", ", map "$_ => '$params{$_}'", sort keys %params)
+    if DEBUG == 2;
+  $self->emit(accept => %params);
 }
 
 sub req_chat {
@@ -60,24 +63,33 @@ sub req_chat {
   $params{protocol} = delete $params{file}; # just a naming thing
   $params{ip} = _addr_to_ip delete $params{addr};
 
-  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== CHAT (" . join(", ", @params{qw/ nick protocol ip port /} ) . ")" if DEBUG == 2;
-  $self->emit(chat => $params{nick}, $params{protocol}, $params{ip}, $params{port});
+  warn sprintf "[%s] %s\n",
+    $self->connection->{debug_key},
+    "=== CHAT => " . join(", ", map "$_ => '$params{$_}'", sort keys %params)
+    if DEBUG == 2;
+  $self->emit(chat => %params);
 }
 
 sub req_resume {
   my ($self, %params) = @_;
   $params{pos} = delete $params{size}; # just a naming thing
 
-  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== RESUME (" . join(", ", @params{qw/ nick file port pos /} ) . ")" if DEBUG == 2;
-  $self->emit(resume => $params{nick}, $params{file}, $params{port}, $params{pos});
+  warn sprintf "[%s] %s\n",
+    $self->connection->{debug_key},
+    "=== RESUME => " . join(", ", map "$_ => '$params{$_}'", sort keys %params)
+    if DEBUG == 2;
+  $self->emit(resume => %params);
 }
 
 sub req_send {
   my ($self, %params) = @_;
   $params{ip} = _addr_to_ip delete $params{addr};
 
-  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== SEND (" . join(", ", @params{qw/ nick file ip port /}, defined $params{size} ? $params{size} : ()) . ")" if DEBUG == 2;
-  $self->emit(send => $params{nick}, $params{file}, $params{ip}, $params{port}, $params{size});
+  warn sprintf "[%s] %s\n",
+    $self->connection->{debug_key},
+    "=== SEND => " . join(", ", map "$_ => '$params{$_}'", sort keys %params)
+    if DEBUG == 2;
+  $self->emit(send => %params);
 }
 
 1;
