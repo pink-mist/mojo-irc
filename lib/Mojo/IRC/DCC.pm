@@ -201,16 +201,16 @@ sub _resume {
   my $err_cb = sub {
     Mojo::IOLoop->remove(delete $params{tid});
     delete $self->{resumes}{$nick}{$file}{$port};
-    $self->emit(error => $_[1]);
+    $self->emit(error => shift);
   };
 
   $params{tid} = Mojo::IOLoop->timer($self->timeout,
-    sub { $self->$err_cb("Resume timed out for '$local'."); });
+    sub { $err_cb->("Resume timed out for '$local'."); });
 
   $self->connection->write(
     PRIVMSG => $nick,
     $self->connection->ctcp(DCC => RESUME => _q($file), $port, $pos),
-    $err_cb
+    sub { $err_cb->($_[1]) if $_[1]; }
   );
 }
 
