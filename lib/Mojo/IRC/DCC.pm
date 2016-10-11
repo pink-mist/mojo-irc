@@ -49,10 +49,10 @@ sub req {
 
 sub req_accept {
   my ($self, %params) = @_;
-  $params{position} = delete $params{size}; # just a naming thing
+  $params{pos} = delete $params{size}; # just a naming thing
 
-  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== ACCEPT (" . join(", ", @params{qw/ nick file port position /} ) . ")" if DEBUG == 2;
-  $self->emit(accept => $params{nick}, $params{file}, $params{port}, $params{position});
+  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== ACCEPT (" . join(", ", @params{qw/ nick file port pos /} ) . ")" if DEBUG == 2;
+  $self->emit(accept => $params{nick}, $params{file}, $params{port}, $params{pos});
 }
 
 sub req_chat {
@@ -66,10 +66,10 @@ sub req_chat {
 
 sub req_resume {
   my ($self, %params) = @_;
-  $params{position} = delete $params{size}; # just a naming thing
+  $params{pos} = delete $params{size}; # just a naming thing
 
-  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== RESUME (" . join(", ", @params{qw/ nick file port position /} ) . ")" if DEBUG == 2;
-  $self->emit(resume => $params{nick}, $params{file}, $params{port}, $params{position});
+  warn sprintf "[%s] %s\n", $self->connection->{debug_key}, "=== RESUME (" . join(", ", @params{qw/ nick file port pos /} ) . ")" if DEBUG == 2;
+  $self->emit(resume => $params{nick}, $params{file}, $params{port}, $params{pos});
 }
 
 sub req_send {
