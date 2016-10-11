@@ -115,6 +115,7 @@ sub _get {
       $s->on(
         close => sub {
           delete $self->{gets}{$nick}{$file}{$port};
+          close $fh if defined $fh;
           $self->emit(close => %params, recv => $recv);
         }
       );
