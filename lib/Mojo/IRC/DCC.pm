@@ -109,7 +109,7 @@ sub _get {
           $recv += length($_[1]);
           print $fh $_[1] if defined $fh;
           $cb->($_[1], $pos, $recv, $size) if defined $cb;
-          $s->write(_long($recv)) if not $params{turbo};
+          $s->write(pack "N", $recv) if not $params{turbo};
         }
       );
       $s->on(
